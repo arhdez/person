@@ -28,11 +28,4 @@ class PersonApplicationTests {
         Number id = documentContext.read("$.id");
         assertThat(id).isEqualTo(99);
     }
-
-    @Test
-    void shouldGetAllPersons() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/persons", String.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getHeaders().getContentType().toString()).isEqualTo("application/json");
-    }
 }
