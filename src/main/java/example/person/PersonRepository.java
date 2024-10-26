@@ -2,5 +2,7 @@ package example.person;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface PersonRepository extends CrudRepository<Person, Long> {
+import java.util.UUID;
+
+public interface PersonRepository extends CrudRepository<Person, UUID> {
 }

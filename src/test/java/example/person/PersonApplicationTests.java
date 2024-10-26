@@ -22,12 +22,12 @@ class PersonApplicationTests {
     @Test
     void shouldReturnACashCardWhenDataIsSaved() {
         ResponseEntity<String> response = restTemplate
-                .getForEntity("/persons/1", String.class);
+                .getForEntity("/persons/c8a802a8-0017-41c0-91dc-e5dfca4aaaa4", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         DocumentContext documentContext = JsonPath.parse(response.getBody());
-        Number id = documentContext.read("$.id");
-        assertThat(id).isEqualTo(1);
+        String id = documentContext.read("$.id");
+        assertThat(id).isEqualTo("c8a802a8-0017-41c0-91dc-e5dfca4aaaa4");
 
         String firstName = documentContext.read("$.firstName");
         assertThat(firstName).isEqualTo("John");

@@ -7,6 +7,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/persons")
@@ -18,17 +19,8 @@ public class PersonController {
         this.personRepository = personRepository;
     }
 
-    /*@GetMapping("/{requestedId}")//it's for testing
-    private ResponseEntity<Person> findById(@PathVariable Long requestedId){
-        if (requestedId.toString().equals("99")) {
-            Person person = new Person(99L, "John", "Doe");
-            return ResponseEntity.ok(person);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }*/
     @GetMapping("/{requestedId}")
-    private ResponseEntity<Person> findById(@PathVariable Long requestedId) {
+    private ResponseEntity<Person> findById(@PathVariable UUID requestedId) {
         Optional<Person> person = personRepository.findById(requestedId);
         if (person.isPresent()) {
             return ResponseEntity.ok(person.get());
@@ -47,7 +39,7 @@ public class PersonController {
         Person person = new Person(null, newPersonRequest.getFirstName(), newPersonRequest.getLastName());
         Person savedPerson = personRepository.save(person);
         URI locationOfNewPerson = ucb
-                .path("person/{id}")
+                .path("persons/{id}")
                 .buildAndExpand(savedPerson.getId())
                 .toUri();
         return ResponseEntity.created(locationOfNewPerson).build();
