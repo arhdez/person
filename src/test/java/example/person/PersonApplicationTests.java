@@ -28,4 +28,12 @@ class PersonApplicationTests {
         Number id = documentContext.read("$.id");
         assertThat(id).isEqualTo(99);
     }
+    @Test
+    void shouldCreateAPerson(){
+        Person newPerson = new Person(null, "John", "Doe");
+        ResponseEntity<Void> createResponse = restTemplate
+                .postForEntity("/persons", newPerson, Void.class);
+        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
 }

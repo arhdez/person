@@ -54,9 +54,9 @@ public class PersonJsonTest {
                 """;
         assertThat(json.parse(expected))
                 .isEqualTo(new Person(99L, "John", "Doe"));
-        assertThat(json.parseObject(expected).id()).isEqualTo(99L);
-        assertThat(json.parseObject(expected).firstName()).isEqualTo("John");
-        assertThat(json.parseObject(expected).lastName()).isEqualTo("Doe");
+        assertThat(json.parseObject(expected).getId()).isEqualTo(99L);
+        assertThat(json.parseObject(expected).getFirstName()).isEqualTo("John");
+        assertThat(json.parseObject(expected).getLastName()).isEqualTo("Doe");
     }
 
     @Test

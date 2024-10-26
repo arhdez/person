@@ -1,14 +1,21 @@
 package example.person;
 
+import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/persons")
+@Import(SecurityConfig.class)//Import security bypass
 public class PersonController {
+    private final PersonRepository personRepository;
+
+    private PersonController(PersonRepository personRepository) {
+        this.personRepository = personRepository;
+    }
     @GetMapping("/{requestedId}")
     private ResponseEntity<Person> findById(@PathVariable Long requestedId){
         if (requestedId.toString().equals("99")) {
@@ -17,5 +24,19 @@ public class PersonController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @GetMapping
+    private ResponseEntity<Iterable<Person>> findAll(){
+        return ResponseEntity.ok(personRepository.findAll());
+    }
+    @PostMapping
+    private ResponseEntity<Void> createPerson(@RequestBody Person newPersonRequest, UriComponentsBuilder ucb){
+        Person person = new Person(null, newPersonRequest.getFirstName(), newPersonRequest.getLastName());
+        Person savedPerson = personRepository.save(person);
+        URI locationOfNewPerson = ucb
+                .path("person/{id}")
+                .buildAndExpand(savedPerson.getId())
+                .toUri();
+        return ResponseEntity.created(locationOfNewPerson).build();
     }
 }
