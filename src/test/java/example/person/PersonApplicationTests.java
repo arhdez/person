@@ -87,7 +87,7 @@ class PersonApplicationTests {
     @Test
     void shouldDeleteAnExistingPerson(){
         ResponseEntity<Void> response = restTemplate
-                .exchange("/persons/8f26ae14-ab0f-4666-bbc1-8469c8401937", HttpMethod.DELETE,
+                .exchange("/persons/f1306528-c77d-443a-9c09-f81911d25fe6", HttpMethod.DELETE,
                         null, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
