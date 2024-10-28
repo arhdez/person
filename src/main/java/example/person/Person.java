@@ -25,10 +25,6 @@ public class Person {
         this.lastName = lastName;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     public UUID getId() {
         return id;
     }

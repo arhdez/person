@@ -1,11 +1,16 @@
 package example.person;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,10 +33,28 @@ public class PersonController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/name/{firstName}")
+    private ResponseEntity<List<Person>> findByFirstName(@PathVariable String requestedFirstName, Pageable pageable){
+        Page<Person> page = personRepository.findByFirstName(requestedFirstName,
+                PageRequest.of(
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        pageable.getSortOr(Sort.by(Sort.Direction.ASC, "lastName"))
+                )
+        );
+        return ResponseEntity.ok(page.getContent());
+    }
 
     @GetMapping
-    private ResponseEntity<Iterable<Person>> findAll() {
-        return ResponseEntity.ok(personRepository.findAll());
+    private ResponseEntity<List<Person>> findAll(Pageable pageable) {
+        Page<Person> page = personRepository.findAll(
+                PageRequest.of(
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        pageable.getSortOr(Sort.by(Sort.Direction.ASC, "firstName"))
+                )
+        );
+        return ResponseEntity.ok(page.getContent());
     }
 
     @PostMapping
@@ -43,5 +66,16 @@ public class PersonController {
                 .buildAndExpand(savedPerson.getId())
                 .toUri();
         return ResponseEntity.created(locationOfNewPerson).build();
+    }
+
+    @PutMapping("/{requestedId}")
+    private ResponseEntity<Void> putPerson(@PathVariable UUID requestedId, @RequestBody Person personUpdate){
+        Optional<Person> person = personRepository.findById(requestedId);
+        if(person.isPresent()){
+            Person updatedPerson = new Person(personUpdate.getId(), personUpdate.getFirstName(), personUpdate.getLastName());
+            personRepository.save(updatedPerson);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
