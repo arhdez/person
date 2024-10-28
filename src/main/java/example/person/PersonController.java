@@ -78,4 +78,12 @@ public class PersonController {
         }
         return ResponseEntity.notFound().build();
     }
+    @DeleteMapping("/{id}")
+    private ResponseEntity<Void> deletePerson(@PathVariable UUID id){
+        if (personRepository.existsById(id)){
+            personRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

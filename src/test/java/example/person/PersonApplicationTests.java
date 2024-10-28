@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -71,6 +73,23 @@ class PersonApplicationTests {
         ResponseEntity<Void> createResponse = restTemplate
                 .postForEntity("/persons", newPerson, Void.class);
         assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
+    void shouldUpdateAnExistingPerson(){
+        Person personUpdate = new Person(null, "Alex", "Rod");
+        HttpEntity<Person> request = new HttpEntity<>(personUpdate);
+        ResponseEntity<Void> response = restTemplate
+                .exchange("/persons/c8a802a8-0017-41c0-91dc-e5dfca4aaaa4", HttpMethod.PUT, request, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    void shouldDeleteAnExistingPerson(){
+        ResponseEntity<Void> response = restTemplate
+                .exchange("/persons/8f26ae14-ab0f-4666-bbc1-8469c8401937", HttpMethod.DELETE,
+                        null, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
 }
