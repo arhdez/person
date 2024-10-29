@@ -11,6 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class PersonController {
         this.personRepository = personRepository;
     }
 
-    @GetMapping("/{requestedId}")
+    @GetMapping("/id/{requestedId}")
     private ResponseEntity<Person> findById(@PathVariable UUID requestedId) {
         Optional<Person> person = personRepository.findById(requestedId);
         if (person.isPresent()) {
@@ -33,8 +34,9 @@ public class PersonController {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/name/{firstName}")
-    private ResponseEntity<List<Person>> findByFirstName(@PathVariable String requestedFirstName, Pageable pageable){
+
+    @GetMapping("/name/{requestedFirstName}")
+    private ResponseEntity<List<Person>> findByFirstName(@PathVariable String requestedFirstName, Pageable pageable) {
         Page<Person> page = personRepository.findByFirstName(requestedFirstName,
                 PageRequest.of(
                         pageable.getPageNumber(),
@@ -45,7 +47,7 @@ public class PersonController {
         return ResponseEntity.ok(page.getContent());
     }
 
-    @GetMapping
+   @GetMapping
     private ResponseEntity<List<Person>> findAll(Pageable pageable) {
         Page<Person> page = personRepository.findAll(
                 PageRequest.of(
@@ -69,18 +71,39 @@ public class PersonController {
     }
 
     @PutMapping("/{requestedId}")
-    private ResponseEntity<Void> putPerson(@PathVariable UUID requestedId, @RequestBody Person personUpdate){
+    private ResponseEntity<Void> putPerson(@PathVariable UUID requestedId, @RequestBody Person personUpdate) {
         Optional<Person> person = personRepository.findById(requestedId);
-        if(person.isPresent()){
+        if (person.isPresent()) {
             Person updatedPerson = new Person(personUpdate.getId(), personUpdate.getFirstName(), personUpdate.getLastName());
             personRepository.save(updatedPerson);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PatchMapping("/{requestedId}")
+    private ResponseEntity<Void> patchPerson(@PathVariable UUID requestedId,
+                                             @RequestBody Map<String, Object> personUpdate) {
+        Optional<Person> optionalPerson = personRepository.findById(requestedId);
+        if (optionalPerson.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Person person = optionalPerson.get();
+
+        personUpdate.forEach((key, value)->{
+            switch (key){
+                case "firstName" -> person.setFirstName((String) value);
+                case "lastName" -> person.setLastName((String) value);
+            }
+        });
+        Person updatedPerson = personRepository.save(person);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
-    private ResponseEntity<Void> deletePerson(@PathVariable UUID id){
-        if (personRepository.existsById(id)){
+    private ResponseEntity<Void> deletePerson(@PathVariable UUID id) {
+        if (personRepository.existsById(id)) {
             personRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }

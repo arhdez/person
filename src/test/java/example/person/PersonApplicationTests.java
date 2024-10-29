@@ -25,14 +25,14 @@ class PersonApplicationTests {
     TestRestTemplate restTemplate;
 
     @Test
-    void shouldReturnACashCardWhenDataIsSaved() {
+    void shouldReturnAPersonWhenDataIsSaved() {
         ResponseEntity<String> response = restTemplate
-                .getForEntity("/persons/c8a802a8-0017-41c0-91dc-e5dfca4aaaa4", String.class);
+                .getForEntity("/persons/id/05896dc7-46ae-4b72-afbe-6ac63995d1f0", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         DocumentContext documentContext = JsonPath.parse(response.getBody());
         String id = documentContext.read("$.id");
-        assertThat(id).isEqualTo("c8a802a8-0017-41c0-91dc-e5dfca4aaaa4");
+        assertThat(id).isEqualTo("05896dc7-46ae-4b72-afbe-6ac63995d1f0");
 
         String firstName = documentContext.read("$.firstName");
         assertThat(firstName).isEqualTo("John");
@@ -53,7 +53,8 @@ class PersonApplicationTests {
     @Test
     void shouldReturnAPageOfPersonsWithFirstName(){
         ResponseEntity<String> response = restTemplate
-                .getForEntity("/persons?firstName=John&page=0&size=4", String.class);
+                //.getForEntity("/persons?firstName=John&page=0&size=4", String.class);
+                .getForEntity("/persons/name/John?page=0&size=4", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
@@ -80,14 +81,14 @@ class PersonApplicationTests {
         Person personUpdate = new Person(null, "Alex", "Rod");
         HttpEntity<Person> request = new HttpEntity<>(personUpdate);
         ResponseEntity<Void> response = restTemplate
-                .exchange("/persons/c8a802a8-0017-41c0-91dc-e5dfca4aaaa4", HttpMethod.PUT, request, Void.class);
+                .exchange("/persons/61f41ea4-29aa-4307-b144-3b807ef2a828", HttpMethod.PUT, request, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     @Test
     void shouldDeleteAnExistingPerson(){
         ResponseEntity<Void> response = restTemplate
-                .exchange("/persons/f1306528-c77d-443a-9c09-f81911d25fe6", HttpMethod.DELETE,
+                .exchange("/persons/96cf0984-5495-4440-a071-b1157da0e8dd", HttpMethod.DELETE,
                         null, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
