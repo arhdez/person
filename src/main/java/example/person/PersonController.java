@@ -10,19 +10,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/persons")
 @Import(SecurityConfig.class)//Import security bypass
 public class PersonController {
     private final PersonRepository personRepository;
+    private  final SSNEncryptionService ssnEncryptionService;
 
-    private PersonController(PersonRepository personRepository) {
+    private PersonController(PersonRepository personRepository, SSNEncryptionService ssnEncryptionService) {
         this.personRepository = personRepository;
+        this.ssnEncryptionService = ssnEncryptionService;
     }
 
     @GetMapping("/id/{requestedId}")
@@ -35,7 +34,7 @@ public class PersonController {
         }
     }
 
-    @GetMapping("/name/{requestedFirstName}")
+    @GetMapping("/firstname/{requestedFirstName}")
     private ResponseEntity<List<Person>> findByFirstName(@PathVariable String requestedFirstName, Pageable pageable) {
         Page<Person> page = personRepository.findByFirstName(requestedFirstName,
                 PageRequest.of(
@@ -60,28 +59,53 @@ public class PersonController {
     }
 
     @PostMapping
+    public ResponseEntity<Void> createPerson(@RequestBody Person newPersonRequest, UriComponentsBuilder ucb) {
+        // Construct new Person object
+        Person person = new Person(null, newPersonRequest.getFirstName(), newPersonRequest.getLastName(), null);
+
+        // Encrypt the SSN and set it on the Person object
+
+        person.setSsn(ssnEncryptionService.encrypt(Arrays.toString(newPersonRequest.getSsn()))); // Encrypt directly without converting to string
+        // Save person and get the generated ID
+        Person savedPerson = personRepository.save(person);
+
+        // Create URI location for the new resource
+        URI locationOfNewPerson = ucb
+                .path("persons/{id}")
+                .buildAndExpand(savedPerson.getId())
+                .toUri();
+
+        // Return the response with 201 status and Location header
+        return ResponseEntity.created(locationOfNewPerson).build();
+    }
+
+    /*@PostMapping
     private ResponseEntity<Void> createPerson(@RequestBody Person newPersonRequest, UriComponentsBuilder ucb) {
-        Person person = new Person(null, newPersonRequest.getFirstName(), newPersonRequest.getLastName());
+        Person person = new Person(null, newPersonRequest.getFirstName(), newPersonRequest.getLastName(),
+                newPersonRequest.getSsn());
+        person.setSsn(ssnEncryptionService.encrypt(Arrays.toString(newPersonRequest.getSsn())));
         Person savedPerson = personRepository.save(person);
         URI locationOfNewPerson = ucb
                 .path("persons/{id}")
                 .buildAndExpand(savedPerson.getId())
                 .toUri();
         return ResponseEntity.created(locationOfNewPerson).build();
-    }
+    }*/
 
     @PutMapping("/{requestedId}")
     private ResponseEntity<Void> putPerson(@PathVariable UUID requestedId, @RequestBody Person personUpdate) {
         Optional<Person> person = personRepository.findById(requestedId);
         if (person.isPresent()) {
-            Person updatedPerson = new Person(personUpdate.getId(), personUpdate.getFirstName(), personUpdate.getLastName());
+            Person updatedPerson = new Person(personUpdate.getId(), personUpdate.getFirstName(), personUpdate.getLastName(), personUpdate.getSsn());
             personRepository.save(updatedPerson);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
-
-    @PatchMapping("/{requestedId}")
+   /* @PutMapping("/{requestedId}"){
+        private
+    }*/
+    /*@PatchMapping("/{requestedId}")
     private ResponseEntity<Void> patchPerson(@PathVariable UUID requestedId,
                                              @RequestBody Map<String, Object> personUpdate) {
         Optional<Person> optionalPerson = personRepository.findById(requestedId);
@@ -99,7 +123,7 @@ public class PersonController {
         });
         Person updatedPerson = personRepository.save(person);
         return ResponseEntity.noContent().build();
-    }
+    }*/
 
     @DeleteMapping("/{id}")
     private ResponseEntity<Void> deletePerson(@PathVariable UUID id) {
