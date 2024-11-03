@@ -1,8 +1,11 @@
-package example.person;
+package example.person.jpa;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -13,12 +16,18 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column
     private String firstName;
+
+    @Column
     private String lastName;
-    @Lob// This annotation indicates a large object, suitable for BYTEA
+
+    // @Lob Removed because if issue with hibernate https://stackoverflow.com/questions/75985717/unable-to-use-spring-data-jpa-to-extract-users-that-have-a-byte-of-a-profile-i
+    @Column
     private byte[] ssn;
 
     public Person() {}
+
     public Person(UUID id, String firstName, String lastName, byte[] ssn) {
         this.id = id;
         this.firstName = firstName;
@@ -56,24 +65,18 @@ public class Person {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Person person = (Person) o;
-        return Objects.equals(id, person.id) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.deepEquals(ssn, person.ssn);
+        return Objects.equals(id, person.id) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, Arrays.hashCode(ssn));
-    }
-
-    @Override
-    public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", ssn=" + Arrays.toString(ssn) +
-                '}';
+        return Objects.hash(id, firstName, lastName);
     }
 }

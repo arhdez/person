@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: person_db_container
+    environment:
+      POSTGRES_DB: person_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root1234
+    volumes:
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
