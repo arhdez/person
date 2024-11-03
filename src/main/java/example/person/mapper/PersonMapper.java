@@ -1,4 +1,4 @@
-package example.person;
+package example.person.mapper;
 
 import example.person.dto.PersonDto;
 import example.person.jpa.Person;

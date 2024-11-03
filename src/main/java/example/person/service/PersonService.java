@@ -1,6 +1,6 @@
 package example.person.service;
 
-import example.person.PersonMapper;
+import example.person.mapper.PersonMapper;
 import example.person.dto.PersonDto;
 import example.person.jpa.Person;
 import example.person.repository.PersonRepository;
