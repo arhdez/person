@@ -2,6 +2,7 @@ package example.person;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import example.person.dto.PersonDto;
 import example.person.jpa.Person;
 import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,7 @@ class PersonApplicationTests {
         DocumentContext documentContext = JsonPath.parse(response.getBody());
         JSONArray page = documentContext.read("$[*]");
 
-        assertThat(page.size()).isEqualTo(4);
+        assertThat(page.size()).isEqualTo(1);
 
         List<String> firstNames = documentContext.read("$[*].firstName");
         assertThat(firstNames).allMatch(name -> name.equals("John"));
@@ -69,19 +70,23 @@ class PersonApplicationTests {
 
     @Test
     void shouldCreateAPerson() {
-        byte[] ssn = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        Person newPerson = new Person(null, "John", "Doe", ssn);
+        PersonDto newPerson = new PersonDto();
+        newPerson.setFirstName("Alexis");
+        newPerson.setLastName("Rodriguez");
+        newPerson.setSsn("123456789");
         ResponseEntity<Void> createResponse = restTemplate.postForEntity("/persons", newPerson, Void.class);
         assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
     void shouldUpdateAnExistingPerson() {
-        byte[] ssn = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        Person personUpdate = new Person(null, "Alex", "Rod", ssn);
-        HttpEntity<Person> request = new HttpEntity<>(personUpdate);
-        ResponseEntity<Void> response = restTemplate.exchange("/persons/61f41ea4-29aa-4307-b144-3b807ef2a828", HttpMethod.PUT, request, Void.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        PersonDto personUpdate = new PersonDto();
+        personUpdate.setFirstName("John");
+        personUpdate.setLastName("Doe");
+        personUpdate.setSsn("987654321");
+        HttpEntity<PersonDto> request = new HttpEntity<>(personUpdate);
+        ResponseEntity<Void> response = restTemplate.exchange("/persons/20d41faf-139d-4ec6-8b01-f5a0e9cf56b7", HttpMethod.PUT, request, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     /*@Test
@@ -102,7 +107,7 @@ class PersonApplicationTests {
 
     @Test
     void shouldDeleteAnExistingPerson() {
-        ResponseEntity<Void> response = restTemplate.exchange("/persons/68c9a1f2-8bed-49e7-998a-d1aff1a66a0e", HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<Void> response = restTemplate.exchange("/persons/05686ccc-115f-417b-85ee-0763c3e68b92", HttpMethod.DELETE, null, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 }
