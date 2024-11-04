@@ -19,6 +19,7 @@ public class PersonMapper {
             personDto.setFirstName(person.getFirstName());
             personDto.setLastName(person.getLastName());
             personDto.setSsn(ssnEncryptionService.decrypt(person.getSsn()));
+            personDto.setEmail(person.getEmail());
         }
         return personDto;
     }
@@ -29,6 +30,7 @@ public class PersonMapper {
             person.setFirstName(personDto.getFirstName());
             person.setLastName(personDto.getLastName());
             person.setSsn(ssnEncryptionService.encrypt(personDto.getSsn()));
+            person.setEmail(personDto.getEmail());
         }
 
         return person;
@@ -39,6 +41,7 @@ public class PersonMapper {
             existent.setFirstName(updatedPersonDto.getFirstName());
             existent.setLastName(updatedPersonDto.getLastName());
             existent.setSsn(ssnEncryptionService.encrypt(updatedPersonDto.getSsn()));
+            existent.setEmail(updatedPersonDto.getEmail());
         }
     }
 }

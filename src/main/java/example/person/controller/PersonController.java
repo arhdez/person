@@ -3,6 +3,7 @@ package example.person.controller;
 import example.person.config.SecurityConfig;
 import example.person.dto.PersonDto;
 import example.person.service.PersonService;
+import jakarta.validation.Valid;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -45,12 +46,12 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<PersonDto> createPerson(@RequestBody PersonDto newPersonRequest) {
+    public ResponseEntity<PersonDto> createPerson(@Valid @RequestBody PersonDto newPersonRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(personService.createPerson(newPersonRequest));
     }
 
     @PutMapping("/{requestedId}")
-    public ResponseEntity<PersonDto> putPerson(@PathVariable UUID requestedId, @RequestBody PersonDto personUpdate) {
+    public ResponseEntity<PersonDto> putPerson(@PathVariable UUID requestedId, @Valid @RequestBody PersonDto personUpdate) {
         Optional<PersonDto> person = personService.updatePerson(personUpdate, requestedId);
         return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }

@@ -71,9 +71,10 @@ class PersonApplicationTests {
     @Test
     void shouldCreateAPerson() {
         PersonDto newPerson = new PersonDto();
-        newPerson.setFirstName("Alexis");
-        newPerson.setLastName("Rodriguez");
+        newPerson.setFirstName("John");
+        newPerson.setLastName("Doe");
         newPerson.setSsn("123456789");
+        newPerson.setEmail("doe@example.com");
         ResponseEntity<Void> createResponse = restTemplate.postForEntity("/persons", newPerson, Void.class);
         assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
@@ -84,8 +85,9 @@ class PersonApplicationTests {
         personUpdate.setFirstName("John");
         personUpdate.setLastName("Doe");
         personUpdate.setSsn("987654321");
+        personUpdate.setEmail("ale@gmail.com");
         HttpEntity<PersonDto> request = new HttpEntity<>(personUpdate);
-        ResponseEntity<Void> response = restTemplate.exchange("/persons/20d41faf-139d-4ec6-8b01-f5a0e9cf56b7", HttpMethod.PUT, request, Void.class);
+        ResponseEntity<Void> response = restTemplate.exchange("/persons/201b2f26-e80c-451a-a065-0479bac96f66", HttpMethod.PUT, request, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -107,7 +109,7 @@ class PersonApplicationTests {
 
     @Test
     void shouldDeleteAnExistingPerson() {
-        ResponseEntity<Void> response = restTemplate.exchange("/persons/05686ccc-115f-417b-85ee-0763c3e68b92", HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<Void> response = restTemplate.exchange("/persons/bd60cabd-4088-418c-94b2-52f4bad70417", HttpMethod.DELETE, null, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 }

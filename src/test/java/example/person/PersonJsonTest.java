@@ -54,10 +54,10 @@ public class PersonJsonTest {
         // Arrange: Create a UUID and a sample Person object
         byte[] ssn = {1,2,3,4,5,6,7,8,9};
         UUID personId = UUID.randomUUID();
-        Person person = new Person(personId, "John", "Doe", ssn);
+        Person person = new Person(personId, "John", "Doe", ssn, "doe@gmail.com");
 
         // Act: Serialize the Person object to JSON
-        String expectedJson = "{\"id\":\"" + personId.toString() + "\", \"firstName\":\"John\", \"lastName\":\"Doe\", \"ssn\":\"123456789\"}";
+        String expectedJson = "{\"id\":\"" + personId.toString() + "\", \"firstName\":\"John\", \"lastName\":\"Doe\", \"ssn\":\"123456789\", \"email\":\"doe@gmail.com\"}";
 
         // Assert: Check if the serialized JSON matches the expected JSON
         assertThat(json.write(person)).isEqualToJson(expectedJson);
@@ -67,7 +67,7 @@ public class PersonJsonTest {
     public void testDeserializeJsonToPerson() throws IOException {
         // Arrange: Create a sample JSON string for a Person
         UUID personId = UUID.randomUUID();
-        String personJson = "{\"id\":\"" + personId + "\", \"firstName\":\"John\", \"lastName\":\"Doe\", \"ssn\":\"123456789\"}";
+        String personJson = "{\"id\":\"" + personId + "\", \"firstName\":\"John\", \"lastName\":\"Doe\", \"ssn\":\"123456789\", \"email\":\"doe@gmail.com\"}";
         // Act: Deserialize the JSON string to a Person object
         Person person = json.parseObject(personJson);
         // Assert: Verify that the fields match
@@ -75,6 +75,7 @@ public class PersonJsonTest {
         assertThat(person.getFirstName()).isEqualTo("John");
         assertThat(person.getLastName()).isEqualTo("Doe");
         assertThat(person.getSsn()).isEqualTo("123456789");
+        assertThat(person.getEmail()).isEqualTo("doe@gmail.com");
     }
 
    /* @Test
