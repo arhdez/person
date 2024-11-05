@@ -2,6 +2,7 @@ package example.person.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 
 
 import java.util.UUID;
@@ -16,10 +17,18 @@ public class PersonDto {
     @JsonProperty("last_name")
     private String lastName;
 
+    @Pattern(
+            regexp = "^\\d{3}-\\d{2}-\\d{4}$",
+            message =  "SSN should be in the format XXX-XX-XXXX"
+    )
     private String ssn;
 
     @JsonProperty("email")
-    @Email(message = "Invalid email format")
+    //@Email(message = "Invalid email format")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            message = "Invalid email format"
+    )
     private String email;
 
     public UUID getId() {
