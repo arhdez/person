@@ -16,4 +16,5 @@ public interface PersonRepository extends CrudRepository<Person, UUID>, PagingAn
     //Page<Person> findAll(Pageable pageable);
     boolean existsById(UUID id);
     boolean existsByEmail(String email);
+    Optional<Person> findByEmail(String email);
 }

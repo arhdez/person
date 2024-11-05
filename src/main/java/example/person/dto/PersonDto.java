@@ -1,7 +1,6 @@
 package example.person.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 
 
@@ -24,7 +23,6 @@ public class PersonDto {
     private String ssn;
 
     @JsonProperty("email")
-    //@Email(message = "Invalid email format")
     @Pattern(
             regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
             message = "Invalid email format"

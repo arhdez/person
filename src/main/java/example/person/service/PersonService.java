@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,7 +38,10 @@ public class PersonService {
 
     public Optional<PersonDto> updatePerson(PersonDto personToUpdateDto, UUID requestedId) {
         Optional<Person> existentPersonOptional = personRepository.findById(requestedId);
-
+        Optional<Person> findEmail = personRepository.findByEmail(personToUpdateDto.getEmail());
+        if (findEmail.isPresent() && findEmail.get().getId() != requestedId){
+            throw new DuplicateException("Email already exists: " + personToUpdateDto.getEmail());
+        }
         if (existentPersonOptional.isPresent()) {
             Person existentPerson = existentPersonOptional.get();
             personMapper.update(existentPerson, personToUpdateDto);
