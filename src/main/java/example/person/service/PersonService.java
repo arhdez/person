@@ -1,22 +1,19 @@
 package example.person.service;
 
-import example.person.mapper.FieldKeyUpdater;
 import example.person.mapper.PersonMapper;
 import example.person.dto.PersonDto;
 import example.person.jpa.Person;
+import example.person.mapper.PersonMapperPatch;
 import example.person.repository.PersonRepository;
 import example.person.validation.DuplicateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,30 +52,18 @@ public class PersonService {
         return Optional.empty();
     }
 
-    public Optional<PersonDto> updatePersonByFields(UUID requestedId, Map<String, Object> fields) {
-        // Update field keys to match entity field names
-        Map<String, Object> updatedFields = FieldKeyUpdater.updateFieldKeys(fields);
+    @Autowired
+    private PersonMapperPatch personMapperPatch;
 
+    public Optional<PersonDto> updatePersonByFields(UUID requestedId, PersonDto fieldsDto){
         Optional<Person> existingPersonOptional = personRepository.findById(requestedId);
-
         if (existingPersonOptional.isPresent()) {
-        Person existingPerson = existingPersonOptional.get();
-
-        updatedFields.forEach((key, value) -> {
-            Field field = ReflectionUtils.findField(Person.class, key);
-
-            if(field!=null){
-            field.setAccessible(true);
-            ReflectionUtils.setField(field, existingPersonOptional.get(), value);
-            } else {
-                System.out.println("Field " + key + " not found on Person class");
-            }
-        });
-        return Optional.of(personMapper.personToPersonDto(personRepository.save(existingPerson)));
+            Person existingPerson = existingPersonOptional.get();
+            personMapperPatch.updatePersonFromDto(fieldsDto, existingPerson);
+            return Optional.of(personMapper.personToPersonDto(personRepository.save(existingPerson)));
         }
         return Optional.empty();
     }
-
 
     public Optional<PersonDto> findById(UUID requestedId) {
         Person existentPerson = personRepository.findById(requestedId).orElse(null);

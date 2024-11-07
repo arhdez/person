@@ -50,9 +50,14 @@ public class PersonController {
         return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PatchMapping("/{requestedId}")
+    /*@PatchMapping("/{requestedId}")
     public  ResponseEntity<PersonDto> patchPerson(@PathVariable UUID requestedId, @RequestBody Map<String, Object> fields){
         Optional<PersonDto> person = personService.updatePersonByFields(requestedId, fields);
+        return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }*/
+    @PatchMapping("/{requestedId}")
+    public  ResponseEntity<PersonDto> patchPerson(@PathVariable UUID requestedId, @RequestBody PersonDto personFieldsToUpdate){
+        Optional<PersonDto> person = personService.updatePersonByFields(requestedId, personFieldsToUpdate);
         return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -61,40 +66,4 @@ public class PersonController {
         personService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    /*@PostMapping
-    private ResponseEntity<Void> createPerson(@RequestBody Person newPersonRequest, UriComponentsBuilder ucb) {
-        Person person = new Person(null, newPersonRequest.getFirstName(), newPersonRequest.getLastName(),
-                newPersonRequest.getSsn());
-        person.setSsn(ssnEncryptionService.encrypt(Arrays.toString(newPersonRequest.getSsn())));
-        Person savedPerson = personRepository.save(person);
-        URI locationOfNewPerson = ucb
-                .path("persons/{id}")
-                .buildAndExpand(savedPerson.getId())
-                .toUri();
-        return ResponseEntity.created(locationOfNewPerson).build();
-    }*/
-
-   /* @PutMapping("/{requestedId}"){
-        private
-    }*/
-    /*@PatchMapping("/{requestedId}")
-    private ResponseEntity<Void> patchPerson(@PathVariable UUID requestedId,
-                                             @RequestBody Map<String, Object> personUpdate) {
-        Optional<Person> optionalPerson = personRepository.findById(requestedId);
-        if (optionalPerson.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-
-        Person person = optionalPerson.get();
-
-        personUpdate.forEach((key, value)->{
-            switch (key){
-                case "firstName" -> person.setFirstName((String) value);
-                case "lastName" -> person.setLastName((String) value);
-            }
-        });
-        Person updatedPerson = personRepository.save(person);
-        return ResponseEntity.noContent().build();
-    }*/
 }
