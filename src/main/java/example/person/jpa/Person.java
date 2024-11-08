@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -12,6 +14,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
+@Data
+@RequiredArgsConstructor
 public class Person {
 
     @Id
@@ -33,65 +37,18 @@ public class Person {
     @Column
     private LocalDate dateOfBirth;
 
-    public Person() {}
-
-    public Person(UUID id, String firstName, String lastName, byte[] ssn, String email, LocalDate dateOfBirth) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.ssn = ssn;
-        this.email = email;
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public byte[] getSsn() {
-        return ssn;
-    }
-
-    public String getEmail() { return email; }
-
-    public void setId(UUID id) { this.id = id; }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setSsn(byte[] ssn) {
-        this.ssn = ssn;
-    }
-
-    public void setEmail(String email) { this.email = email; }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Person person = (Person) o;
-        return Objects.equals(id, person.id) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.deepEquals(ssn, person.ssn) && Objects.equals(email, person.email) && Objects.equals(dateOfBirth, person.dateOfBirth);
+        return Objects.equals(id, person.id) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.deepEquals(
+                ssn,
+                person.ssn) && Objects.equals(email, person.email) && Objects.equals(dateOfBirth, person.dateOfBirth);
     }
 
     @Override

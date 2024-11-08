@@ -3,15 +3,24 @@ package example.person.controller;
 import example.person.config.SecurityConfig;
 import example.person.dto.PersonDto;
 import example.person.service.PersonService;
-import jakarta.validation.Valid;
+import example.person.validation.CreateGroup;
+import example.person.validation.PatchGroup;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,19 +49,18 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<PersonDto> createPerson(@Valid @RequestBody PersonDto newPersonRequest) {
+    public ResponseEntity<PersonDto> createPerson(@Validated(CreateGroup.class) @RequestBody PersonDto newPersonRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(personService.createPerson(newPersonRequest));
     }
 
     @PutMapping("/{requestedId}")
-    public ResponseEntity<PersonDto> putPerson(@PathVariable UUID requestedId, @Valid @RequestBody PersonDto personUpdate) {
+    public ResponseEntity<PersonDto> putPerson(@PathVariable UUID requestedId, @Validated(CreateGroup.class) @RequestBody PersonDto personUpdate) {
         Optional<PersonDto> person = personService.updatePerson(personUpdate, requestedId);
         return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
     @PatchMapping("/{requestedId}")
-    public  ResponseEntity<PersonDto> patchPerson(@PathVariable UUID requestedId, @Valid @RequestBody PersonDto personFieldsToUpdate){
+    public ResponseEntity<PersonDto> patchPerson(@PathVariable UUID requestedId, @Validated(PatchGroup.class) @RequestBody PersonDto personFieldsToUpdate) {
         Optional<PersonDto> person = personService.updatePersonByFields(requestedId, personFieldsToUpdate);
         return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
