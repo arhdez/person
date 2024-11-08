@@ -29,6 +29,13 @@ public class PersonDto {
     )
     private String email;
 
+    @JsonProperty("date_of_birth")
+    @Pattern(
+            regexp = "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$",
+            message = "Date of birth must be in the format yyyy-MM-dd and a valid date"
+    )
+    private String dateOfBirth;// As a String in desired format (e.g., "dd-MM-yyyy")
+
     public UUID getId() {
         return id;
     }
@@ -64,4 +71,12 @@ public class PersonDto {
     public String getEmail() { return email; }
 
     public void setEmail(String email) { this.email = email; }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 }
