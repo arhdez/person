@@ -2,34 +2,28 @@ package example.person.mapper;
 
 import example.person.dto.PersonDto;
 import example.person.jpa.Person;
+import example.person.service.SSNEncryptionService;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.nio.charset.StandardCharsets;
 
 @Mapper(componentModel = "spring")
-public interface PersonMapperPatch {
+public abstract class PersonMapperPatch {
+
+    @Autowired
+    private SSNEncryptionService ssnEncryptionService;
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updatePersonFromDto(PersonDto dto, @MappingTarget Person person);
+    public abstract void updatePersonFromDto(PersonDto dto, @MappingTarget Person person);
 
-    // Custom mapping method for String -> byte[]
-    default byte[] mapStringToByteArray(String value) {
-        //return value != null ? value.getBytes(StandardCharsets.UTF_8) : null;
-        return value != null ? value.getBytes(StandardCharsets.UTF_8) : null;
+    // Encrypts a String to byte[]
+    public byte[] mapStringToByteArray(String value) {
+        return value != null ? ssnEncryptionService.encrypt(value) : null;
     }
 
-    // Custom mapping method for byte[] -> String (if needed for reverse mapping)
-    default String mapByteArrayToString(byte[] value) {
-        return value != null ? new String(value, StandardCharsets.UTF_8) : null;
+    // Decrypts byte[] to String
+    public String mapByteArrayToString(byte[] value) {
+        return value != null ? ssnEncryptionService.decrypt(value) : null;
     }
-
-    /*PersonMapper INSTANCE = Mappers.getMapper(PersonMapper.class);
-
-    @Mapping(target = "dateOfBirth", source = "dateOfBirth", dateFormat = "dd-MM-yyyy")
-    PersonDto personToPersonDTO(Person person);
-
-    @Mapping(target = "dateOfBirth", source = "dateOfBirth", dateFormat = "dd-MM-yyyy")
-    Person personDTOToPerson(PersonDto personDTO);*/
 }
 
