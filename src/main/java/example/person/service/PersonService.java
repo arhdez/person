@@ -1,12 +1,10 @@
 package example.person.service;
 
-import example.person.mapper.PersonMapper;
 import example.person.dto.PersonDto;
 import example.person.jpa.Person;
-import example.person.mapper.PersonMapperPatch;
+import example.person.mapper.PersonMapper;
 import example.person.repository.PersonRepository;
 import example.person.validation.DuplicateException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +28,7 @@ public class PersonService {
     }
 
     public PersonDto createPerson(PersonDto personDto) {
-        if (personRepository.existsByEmail(personDto.getEmail())){
+        if (personRepository.existsByEmail(personDto.getEmail())) {
             throw new DuplicateException("Email already exists: " + personDto.getEmail());
         }
         // Save person and get the generated ID
@@ -41,7 +39,7 @@ public class PersonService {
         Optional<Person> existentPersonOptional = personRepository.findById(requestedId);
         Optional<Person> findEmail = personRepository.findByEmail(personToUpdateDto.getEmail());
 
-        if (findEmail.isPresent() && findEmail.get().getId() != requestedId){
+        if (findEmail.isPresent() && findEmail.get().getId() != requestedId) {
             throw new DuplicateException("Email already exists: " + personToUpdateDto.getEmail());
         }
         if (existentPersonOptional.isPresent()) {
@@ -52,14 +50,11 @@ public class PersonService {
         return Optional.empty();
     }
 
-    @Autowired
-    private PersonMapperPatch personMapperPatch;
-
-    public Optional<PersonDto> updatePersonByFields(UUID requestedId, PersonDto fieldsDto){
+    public Optional<PersonDto> updatePersonByFields(UUID requestedId, PersonDto fieldsDto) {
         Optional<Person> existingPersonOptional = personRepository.findById(requestedId);
         if (existingPersonOptional.isPresent()) {
             Person existingPerson = existingPersonOptional.get();
-            personMapperPatch.updatePersonFromDto(fieldsDto, existingPerson);
+            personMapper.update(existingPerson, fieldsDto);
             return Optional.of(personMapper.personToPersonDto(personRepository.save(existingPerson)));
         }
         return Optional.empty();

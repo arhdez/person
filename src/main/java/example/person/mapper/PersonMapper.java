@@ -2,53 +2,29 @@ package example.person.mapper;
 
 import example.person.dto.PersonDto;
 import example.person.jpa.Person;
-import example.person.service.DateFormatService;
-import example.person.service.SSNEncryptionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.DecoratedWith;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Component
-public abstract class PersonMapper {
+import java.time.LocalDateTime;
 
-    @Autowired
-    private SSNEncryptionService ssnEncryptionService;
+@Mapper(unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE, componentModel = "spring", imports = {LocalDateTime.class})
+@DecoratedWith(PersonMapperDecorator.class)
+public interface PersonMapper {
 
-    @Autowired
-    private DateFormatService dateFormatService;
+    @Mapping(target = "ssn", ignore = true)
+    @Mapping(target = "dateOfBirth", ignore = true)
+    PersonDto personToPersonDto(Person person);
 
-    public PersonDto personToPersonDto(Person person) {
-        PersonDto personDto = new PersonDto();
-        if (person != null) {
-            personDto.setId(person.getId());
-            personDto.setFirstName(person.getFirstName());
-            personDto.setLastName(person.getLastName());
-            personDto.setSsn(ssnEncryptionService.decrypt(person.getSsn()));
-            personDto.setEmail(person.getEmail());
-            personDto.setDateOfBirth(dateFormatService.localDateToString(person.getDateOfBirth()));
-        }
-        return personDto;
-    }
+    @Mapping(target = "ssn", ignore = true)
+    @Mapping(target = "dateOfBirth", ignore = true)
+    Person personDtoToPerson(PersonDto personDto);
 
-    public Person personDtoToPerson(PersonDto personDto) {
-        Person person = new Person();
-        if (personDto != null) {
-            person.setFirstName(personDto.getFirstName());
-            person.setLastName(personDto.getLastName());
-            person.setSsn(ssnEncryptionService.encrypt(personDto.getSsn()));
-            person.setEmail(personDto.getEmail());
-            person.setDateOfBirth(dateFormatService.stringToLocalDate(personDto.getDateOfBirth()));
-        }
-
-        return person;
-    }
-
-    public void update(Person existent, PersonDto updatedPersonDto) {
-        if (existent != null && updatedPersonDto != null) {
-            existent.setFirstName(updatedPersonDto.getFirstName());
-            existent.setLastName(updatedPersonDto.getLastName());
-            existent.setSsn(ssnEncryptionService.encrypt(updatedPersonDto.getSsn()));
-            existent.setEmail(updatedPersonDto.getEmail());
-            existent.setDateOfBirth(dateFormatService.stringToLocalDate(updatedPersonDto.getDateOfBirth()));
-        }
-    }
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "ssn", ignore = true)
+    @Mapping(target = "dateOfBirth", ignore = true)
+    void update(@MappingTarget Person existent, PersonDto updatedPersonDto);
 }
