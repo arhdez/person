@@ -5,6 +5,7 @@ import example.person.jpa.Person;
 import example.person.mapper.PersonMapper;
 import example.person.repository.PersonRepository;
 import example.person.validation.DuplicateException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,15 +18,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PersonService {
 
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
 
-    private PersonService(PersonRepository personRepository, PersonMapper personMapper) {
-        this.personRepository = personRepository;
-        this.personMapper = personMapper;
-    }
 
     public PersonDto createPerson(PersonDto personDto) {
         if (personRepository.existsByEmail(personDto.getEmail())) {
