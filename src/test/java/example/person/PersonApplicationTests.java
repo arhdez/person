@@ -71,10 +71,11 @@ class PersonApplicationTests {
     @Test
     void shouldCreateAPerson() {
         PersonDto newPerson = new PersonDto();
-        newPerson.setFirstName("John");
+        newPerson.setFirstName("Doe");
         newPerson.setLastName("Doe");
         newPerson.setSsn("123456789");
-        newPerson.setEmail("doe@example.com");
+        newPerson.setEmail("doe3@example.com");
+        newPerson.setDateOfBirth("2016-04-25");
         ResponseEntity<Void> createResponse = restTemplate.postForEntity("/persons", newPerson, Void.class);
         assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
@@ -86,6 +87,7 @@ class PersonApplicationTests {
         personUpdate.setLastName("Doe");
         personUpdate.setSsn("987654321");
         personUpdate.setEmail("ale@gmail.com");
+        personUpdate.setDateOfBirth("2015-02-24");
         HttpEntity<PersonDto> request = new HttpEntity<>(personUpdate);
         ResponseEntity<Void> response = restTemplate.exchange("/persons/201b2f26-e80c-451a-a065-0479bac96f66", HttpMethod.PUT, request, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

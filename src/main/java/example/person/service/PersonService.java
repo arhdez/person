@@ -35,25 +35,11 @@ public class PersonService {
 
     public Optional<PersonDto> updatePerson(PersonDto personToUpdateDto, UUID requestedId) {
         Optional<Person> existentPersonOptional = personRepository.findById(requestedId);
-        Optional<Person> findEmail = personRepository.findByEmail(personToUpdateDto.getEmail());
-
-        if (findEmail.isPresent() && findEmail.get().getId() != requestedId) {
-            throw new DuplicateException("Email already exists: " + personToUpdateDto.getEmail());
-        }
+        nonDuplicatedPerson(personToUpdateDto, requestedId);
         if (existentPersonOptional.isPresent()) {
             Person existentPerson = existentPersonOptional.get();
             personMapper.update(existentPerson, personToUpdateDto);
             return Optional.of(personMapper.personToPersonDto(personRepository.save(existentPerson)));
-        }
-        return Optional.empty();
-    }
-
-    public Optional<PersonDto> updatePersonByFields(UUID requestedId, PersonDto fieldsDto) {
-        Optional<Person> existingPersonOptional = personRepository.findById(requestedId);
-        if (existingPersonOptional.isPresent()) {
-            Person existingPerson = existingPersonOptional.get();
-            personMapper.update(existingPerson, fieldsDto);
-            return Optional.of(personMapper.personToPersonDto(personRepository.save(existingPerson)));
         }
         return Optional.empty();
     }
@@ -77,5 +63,13 @@ public class PersonService {
 
     public void delete(UUID requestedId) {
         personRepository.deleteById(requestedId);
+    }
+
+    private void nonDuplicatedPerson(PersonDto personToUpdateDto, UUID requestedId) {
+        Optional<Person> findEmail = personRepository.findByEmail(personToUpdateDto.getEmail());
+
+        if (findEmail.isPresent() && findEmail.get().getId() != requestedId) {
+            throw new DuplicateException("Email already exists: " + personToUpdateDto.getEmail());
+        }
     }
 }

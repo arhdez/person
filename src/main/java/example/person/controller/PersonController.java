@@ -61,7 +61,7 @@ public class PersonController {
 
     @PatchMapping("/{requestedId}")
     public ResponseEntity<PersonDto> patchPerson(@PathVariable UUID requestedId, @Validated(PatchGroup.class) @RequestBody PersonDto personFieldsToUpdate) {
-        Optional<PersonDto> person = personService.updatePersonByFields(requestedId, personFieldsToUpdate);
+        Optional<PersonDto> person = personService.updatePerson(personFieldsToUpdate, requestedId);
         return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

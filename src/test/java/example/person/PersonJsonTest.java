@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,15 +50,17 @@ public class PersonJsonTest {
         assertThat(json.write(person)).extractingJsonPathStringValue("@.lastName")
                 .isEqualTo("Doe");
     }*/
-    @Test
+
+    //------------------------
+    /*@Test
     public void testSerializePersonToJson() throws IOException {
         // Arrange: Create a UUID and a sample Person object
         byte[] ssn = {1,2,3,4,5,6,7,8,9};
         UUID personId = UUID.randomUUID();
-        Person person = new Person(personId, "John", "Doe", ssn, "doe@gmail.com");
+        Person person = new Person(personId, "John", "Doe", ssn, "doe@gmail.com", LocalDate.now());
 
         // Act: Serialize the Person object to JSON
-        String expectedJson = "{\"id\":\"" + personId.toString() + "\", \"firstName\":\"John\", \"lastName\":\"Doe\", \"ssn\":\"123456789\", \"email\":\"doe@gmail.com\"}";
+        String expectedJson = "{\"id\":\"" + personId.toString() + "\", \"firstName\":\"John\", \"lastName\":\"Doe\", \"ssn\":\"123456789\", \"email\":\"doe@gmail.com\", \"date_of_birth\":\"1987-02-13\"}";
 
         // Assert: Check if the serialized JSON matches the expected JSON
         assertThat(json.write(person)).isEqualToJson(expectedJson);
@@ -67,7 +70,7 @@ public class PersonJsonTest {
     public void testDeserializeJsonToPerson() throws IOException {
         // Arrange: Create a sample JSON string for a Person
         UUID personId = UUID.randomUUID();
-        String personJson = "{\"id\":\"" + personId + "\", \"firstName\":\"John\", \"lastName\":\"Doe\", \"ssn\":\"123456789\", \"email\":\"doe@gmail.com\"}";
+        String personJson = "{\"id\":\"" + personId + "\", \"firstName\":\"John\", \"lastName\":\"Doe\", \"ssn\":\"123456789\", \"email\":\"doe@gmail.com\", \\\"date_of_birth\\\":\\\"1987-02-13\\\"}\"}";
         // Act: Deserialize the JSON string to a Person object
         Person person = json.parseObject(personJson);
         // Assert: Verify that the fields match
@@ -76,8 +79,43 @@ public class PersonJsonTest {
         assertThat(person.getLastName()).isEqualTo("Doe");
         assertThat(person.getSsn()).isEqualTo("123456789");
         assertThat(person.getEmail()).isEqualTo("doe@gmail.com");
-    }
+        assertThat(person.getDateOfBirth()).isEqualTo("1987-02-13");
+    }*/
+//-----------------------
+    //********************
+@Test
+public void testSerializePersonToJson() throws IOException {
+    // Arrange: Create a UUID and a sample Person object
+    UUID personId = UUID.randomUUID();
+    byte[] ssn = {1,2,3,4,5,6,7,8,9};
+    Person person = new Person(personId, "John", "Doe", ssn, "doe@gmail.com", LocalDate.of(1987, 2, 13));
 
+    // Act: Serialize the Person object to JSON
+    String expectedJson = String.format("{\"id\":\"%s\",\"firstName\":\"John\",\"lastName\":\"Doe\",\"ssn\":\"123456789\",\"email\":\"doe@gmail.com\",\"date_of_birth\":\"1987-02-13\"}", personId);
+
+    // Assert: Check if the serialized JSON matches the expected JSON
+    assertThat(json.write(person)).isEqualToJson(expectedJson);
+}
+
+    @Test
+    public void testDeserializeJsonToPerson() throws IOException {
+        // Arrange: Create a sample JSON string for a Person
+        UUID personId = UUID.randomUUID();
+        String personJson = String.format("{\"id\":\"%s\",\"firstName\":\"John\",\"lastName\":\"Doe\",\"ssn\":\"123456789\",\"email\":\"doe@gmail.com\",\"date_of_birth\":\"1987-02-13\"}", personId);
+
+        // Act: Deserialize the JSON string to a Person object
+        Person person = json.parseObject(personJson);
+
+        // Assert: Verify that the fields match
+        assertThat(person.getId()).isEqualTo(personId);
+        assertThat(person.getFirstName()).isEqualTo("John");
+        assertThat(person.getLastName()).isEqualTo("Doe");
+        assertThat(new String(person.getSsn())).isEqualTo("123456789"); // Convert byte array to string
+        assertThat(person.getEmail()).isEqualTo("doe@gmail.com");
+        assertThat(person.getDateOfBirth()).isEqualTo(LocalDate.of(1987, 2, 13));
+    }
+}
+    //***************
    /* @Test
     void personDeserializationTest() throws IOException {
         String expected = """
@@ -112,4 +150,4 @@ public class PersonJsonTest {
         assertThat(jsonList.parse(expected)).isEqualTo(persons);
     }*/
 
-}
+//}
