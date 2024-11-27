@@ -32,6 +32,11 @@ public class PersonController {
 
     public PersonController(PersonService personService) {this.personService = personService;}
 
+    @PostMapping
+    public ResponseEntity<PersonDto> createPerson(@Validated(CreateGroup.class) @RequestBody PersonDto newPersonRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(personService.createPerson(newPersonRequest));
+    }
+
     @GetMapping("/id/{requestedId}")
     public ResponseEntity<PersonDto> findById(@PathVariable UUID requestedId) {
         Optional<PersonDto> person = personService.findById(requestedId);
@@ -46,11 +51,6 @@ public class PersonController {
     @GetMapping
     public ResponseEntity<List<PersonDto>> findAll(Pageable pageable) {
         return ResponseEntity.ok(personService.findAll(pageable));
-    }
-
-    @PostMapping
-    public ResponseEntity<PersonDto> createPerson(@Validated(CreateGroup.class) @RequestBody PersonDto newPersonRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(personService.createPerson(newPersonRequest));
     }
 
     @PutMapping("/{requestedId}")
