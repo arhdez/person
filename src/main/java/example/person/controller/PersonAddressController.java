@@ -24,7 +24,7 @@ public class PersonAddressController {
         this.personAddressService = personAddressService;
     }
 
-    @PostMapping
+    /*@PostMapping
     public ResponseEntity<PersonWithPersonAddressDto> createPersonAddress(@Validated(CreateGroup.class) @RequestBody PersonAddressDto newPersonAddress) {
         return ResponseEntity.status(HttpStatus.CREATED).body(personAddressService.createPersonAddress(newPersonAddress));
     }
@@ -32,5 +32,5 @@ public class PersonAddressController {
     @GetMapping
     public ResponseEntity<List<PersonWithPersonAddressDto>> findAllPersonWithPersonAddress(Pageable pageable) {
         return ResponseEntity.ok(personAddressService.findAllPersonWithPersonAddress(pageable));
-    }
+    }*/
 }

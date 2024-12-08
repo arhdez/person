@@ -1,5 +1,6 @@
 package example.person.repository;
 
+import example.person.jpa.Address;
 import example.person.jpa.PersonAddress;
 import example.person.jpa.PersonAddressId;
 import org.springframework.data.repository.CrudRepository;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface PersonAddressRepository extends CrudRepository<PersonAddress, PersonAddressId>, PagingAndSortingRepository<PersonAddress, PersonAddressId> {
-    List<PersonAddress> findByIdAddressId(UUID uuid);
-    boolean existsByIdPersonIdAndIdAddressId(UUID personId, UUID addressId);
+public interface AddressRepository extends CrudRepository<Address, UUID>, PagingAndSortingRepository<Address, UUID> {
+    //List<PersonAddress> findByAddressId(UUID uuid);
+    boolean existsByAddressId(UUID addressId);
 }
