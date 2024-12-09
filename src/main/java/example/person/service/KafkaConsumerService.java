@@ -20,8 +20,7 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = "address-topic", groupId = "person-api-group")
     public void consumerAddressDto(AddressKafkaDto addressKafkaDto) {
-        System.out.println("Received payload: " + addressKafkaDto);
-        //LOGGER.info(String.format("asdfasdfasd", addressDto.toString()));
-        //addressService.processAddress(addressDto);
+        LOGGER.info("Received payload {}", addressKafkaDto.toString());
+        addressService.processAddress(addressKafkaDto);
     }
 }
