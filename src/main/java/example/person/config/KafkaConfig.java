@@ -8,7 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,14 +24,7 @@ public class KafkaConfig {
         Map<String, Object> properties = new HashMap<>();
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, "person-api-group");
-
-        // Set StringDeserializer for key
-        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-
-        // Set JsonDeserializer for value and specify the trusted package and value type
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        properties.put(JsonDeserializer.TRUSTED_PACKAGES, "example.person.dto"); // Specify trusted package for deserialization
-        properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "example.person.dto.AddressKafkaDto"); // Fully qualified class name for AddressKafkaDto
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         return properties;
     }
@@ -36,7 +32,13 @@ public class KafkaConfig {
     // Consumer factory setup
     @Bean
     public ConsumerFactory<String, AddressKafkaDto> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfig());
+        JsonDeserializer<AddressKafkaDto> deserializer = new JsonDeserializer<>(AddressKafkaDto.class);
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.setUseTypeMapperForKey(true);
+
+        ErrorHandlingDeserializer<AddressKafkaDto> errorHandlingDeserializer = new ErrorHandlingDeserializer<>(deserializer);
+
+        return new DefaultKafkaConsumerFactory<>(consumerConfig(), new StringDeserializer(), errorHandlingDeserializer);
     }
 
     // KafkaListenerContainerFactory setup
@@ -45,13 +47,13 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, AddressKafkaDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
 
-        // Configure error handler
-        /*DefaultErrorHandler errorHandler = new DefaultErrorHandler(
-                new FixedBackOff(1000L, 3) // Retry every 1 second for up to 3 retries
+        // Configure error handler to limit retries
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler((record, exception) -> System.err.println("Retries exhausted for record: " + record),
+                new FixedBackOff(1000L, 3)
+                // Backoff time
         );
 
-        // Set error handler to the factory
-        factory.setErrorHandler(errorHandler);*/
+        factory.setCommonErrorHandler(errorHandler);
 
         return factory;
     }

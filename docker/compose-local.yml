@@ -33,18 +33,18 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092  # External address
-      KAFKA_LISTENER_SECURITY_PROTOCOL: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
-      - "9092:9092"  # External port
-
+      - "9092:9092"
+      - "29092:29092"
   # Kafka UI Service
   kafka-ui:
-    container_name: pms-kafka-ui
+    container_name: kafka-ui
     image: provectuslabs/kafka-ui:v0.7.2
     ports:
       - "8085:8080"  # External port for Kafka UI
     environment:
       KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092  # Internal address for Kafka UI to connect to Kafka
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092  # Internal address for Kafka UI to connect to Kafka
