@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AddressDto {
+public class AddressKafkaDto {
 
     @JsonProperty("address_id")
     private UUID addressId;

@@ -1,6 +1,6 @@
 package example.person.mapper;
 
-import example.person.dto.AddressDto;
+import example.person.dto.AddressKafkaDto;
 import example.person.jpa.Address;
 import org.mapstruct.*;
 
@@ -8,11 +8,11 @@ import org.mapstruct.*;
 @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface AddressMapper {
 
-    AddressDto addressToAddressDto(Address address);
+    AddressKafkaDto addressToAddressDto(Address address);
 
-    Address addressDtoToAddress(AddressDto addressDto);
+    Address addressDtoToAddress(AddressKafkaDto addressKafkaDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void update(@MappingTarget Address existent, AddressDto updatedAddressDto);
+    void update(@MappingTarget Address existent, AddressKafkaDto updatedAddressKafkaDto);
 
 }

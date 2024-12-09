@@ -1,6 +1,6 @@
 package example.person.service;
 
-import example.person.dto.AddressDto;
+import example.person.dto.AddressKafkaDto;
 import example.person.jpa.Address;
 import example.person.mapper.AddressMapper;
 import example.person.repository.AddressRepository;
@@ -23,25 +23,25 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
 
-    public void processAddress(AddressDto addressDto) {
-        if (addressRepository.existsById(addressDto.getAddressId())) {
-            updateAddress(addressDto, addressDto.getAddressId());
+    public void processAddress(AddressKafkaDto addressKafkaDto) {
+        if (addressRepository.existsById(addressKafkaDto.getAddressId())) {
+            updateAddress(addressKafkaDto, addressKafkaDto.getAddressId());
         } else {
-            createAddress(addressDto);
+            createAddress(addressKafkaDto);
         }
     }
 
-    public AddressDto createAddress(AddressDto addressDto){
-        return addressMapper.addressToAddressDto(addressRepository.save(addressMapper.addressDtoToAddress(addressDto)));
+    public AddressKafkaDto createAddress(AddressKafkaDto addressKafkaDto){
+        return addressMapper.addressToAddressDto(addressRepository.save(addressMapper.addressDtoToAddress(addressKafkaDto)));
     }
 
-    public List<AddressDto> findAllAddress(Pageable pageable){
+    public List<AddressKafkaDto> findAllAddress(Pageable pageable){
         PageRequest pageRequest =
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSortOr(Sort.by(Sort.Direction.ASC, "street")));
         return addressRepository.findAll(pageRequest).stream().map(addressMapper::addressToAddressDto).collect(Collectors.toList());
     }
 
-    public Optional<AddressDto> updateAddress(AddressDto addressToUpdateDto, UUID requestedId){
+    public Optional<AddressKafkaDto> updateAddress(AddressKafkaDto addressToUpdateDto, UUID requestedId){
         Optional<Address> existentAddressOptional = addressRepository.findById(requestedId);
         if (existentAddressOptional.isPresent()){
             Address existentAddress = existentAddressOptional.get();
