@@ -4,7 +4,6 @@ import example.person.dto.AddressKafkaDto;
 import example.person.jpa.Address;
 import example.person.mapper.AddressMapper;
 import example.person.repository.AddressRepository;
-import example.person.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AddressService {
-    private final PersonRepository personRepository;
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
 
@@ -39,6 +37,11 @@ public class AddressService {
         PageRequest pageRequest =
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSortOr(Sort.by(Sort.Direction.ASC, "street")));
         return addressRepository.findAll(pageRequest).stream().map(addressMapper::addressToAddressDto).collect(Collectors.toList());
+    }
+
+    public Optional<AddressKafkaDto> findById(UUID requestedId){
+        Address existentAddress = addressRepository.findById(requestedId).orElse(null);
+        return Optional.of(addressMapper.addressToAddressDto(existentAddress));
     }
 
     public Optional<AddressKafkaDto> updateAddress(AddressKafkaDto addressToUpdateDto, UUID requestedId){

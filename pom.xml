@@ -109,6 +109,11 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 		<!-- Not sure i add after kafka to try JSON parsing -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.10.0</version>
+		</dependency>
 
 	</dependencies>
 

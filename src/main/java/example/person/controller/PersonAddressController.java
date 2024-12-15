@@ -2,9 +2,7 @@ package example.person.controller;
 
 import example.person.config.SecurityConfig;
 import example.person.dto.PersonAddressDto;
-import example.person.dto.PersonWithPersonAddressDto;
 import example.person.service.PersonAddressService;
-import example.person.validation.CreateGroup;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,13 +22,13 @@ public class PersonAddressController {
         this.personAddressService = personAddressService;
     }
 
-    /*@PostMapping
-    public ResponseEntity<PersonWithPersonAddressDto> createPersonAddress(@Validated(CreateGroup.class) @RequestBody PersonAddressDto newPersonAddress) {
+    @PostMapping
+    public ResponseEntity<PersonAddressDto> createPersonAddress(@Validated @RequestBody PersonAddressDto newPersonAddress) {
         return ResponseEntity.status(HttpStatus.CREATED).body(personAddressService.createPersonAddress(newPersonAddress));
     }
 
     @GetMapping
-    public ResponseEntity<List<PersonWithPersonAddressDto>> findAllPersonWithPersonAddress(Pageable pageable) {
-        return ResponseEntity.ok(personAddressService.findAllPersonWithPersonAddress(pageable));
-    }*/
+    public ResponseEntity<List<PersonAddressDto>> findAllPersonAddress(Pageable pageable) {
+        return ResponseEntity.ok(personAddressService.findAllPersonAddress(pageable));
+    }
 }
