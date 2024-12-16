@@ -27,7 +27,7 @@ public class CsvFileService {
     private final PersonService personService;
     private final AddressService addressService;
 
-    public void createFile(){
+    public String createFile(){
         List<PersonAddressDto> personAddresses = personAddressService.findAll();
         List<CsvPersonAddressDto> personAddressList = createCsvPersonAddressDto(personAddresses);
 
@@ -38,6 +38,7 @@ public class CsvFileService {
         writeCsvFile(filePath, personAddressList);
 
         System.out.println("CSV file created at: " + filePath);
+        return filePath;
     }
 
     private static void createdPath() {
