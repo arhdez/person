@@ -31,7 +31,7 @@ public class PersonAddressService {
         return personAddressMapper.personAddressToPersonAddressDto(personAddressRepository.save(personAddressMapper.personAddressDtoToPersonAddress(personAddressDto)));
     }
 
-    public List<PersonAddressDto> findAllPersonAddress(Pageable pageable){
+    public List<PersonAddressDto> findAll(Pageable pageable){
         PageRequest pageRequest =
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSortOr(Sort.by(Sort.Direction.ASC, "id")));
         return personAddressRepository.findAll(pageRequest).stream().map(personAddressMapper::personAddressToPersonAddressDto).collect(Collectors.toList()) ;

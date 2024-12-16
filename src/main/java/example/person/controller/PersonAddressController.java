@@ -29,6 +29,6 @@ public class PersonAddressController {
 
     @GetMapping
     public ResponseEntity<List<PersonAddressDto>> findAllPersonAddress(Pageable pageable) {
-        return ResponseEntity.ok(personAddressService.findAllPersonAddress(pageable));
+        return ResponseEntity.ok(personAddressService.findAll(pageable));
     }
 }
