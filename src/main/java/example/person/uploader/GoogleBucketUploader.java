@@ -16,7 +16,7 @@ public class GoogleBucketUploader {
     public static void uploadFile(String bucketName, String filePath, String objectName) {
         try {
             // Load credentials from the JSON key file
-            String credentialsPath = "C:\\Users\\arhde\\OneDrive\\Documentos\\workspace\\person\\src\\main\\java\\example\\person\\config\\turnkey-env-446305-i2-12cbf1c2f905.json"; // Update this path
+            String credentialsPath = "src\\main\\java\\example\\person\\config\\turnkey-env-446305-i2-12cbf1c2f905.json"; // Update this path
             // Instantiate the Storage client
             Storage storage = StorageOptions.newBuilder()
                     .setCredentials(ServiceAccountCredentials.fromStream(new FileInputStream(credentialsPath)))
@@ -45,28 +45,4 @@ public class GoogleBucketUploader {
             e.printStackTrace();
         }
     }
-            /*Storage storage = StorageOptions.getDefaultInstance().getService();
-
-            // Get the file as a byte array
-            Path path = Paths.get(filePath);
-            byte[] fileBytes = Files.readAllBytes(path);
-
-            // Define the blob ID (bucket name and object name)
-            BlobId blobId = BlobId.of(bucketName, objectName);
-
-            // Create a blob with metadata
-            BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-                    .setContentType("text/csv")
-                    .build();
-
-            //Upload the file
-            storage.create(blobInfo, fileBytes);
-            //Permissions
-            //storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
-
-            System.out.println("File uploaded to bucket: " + bucketName + "/" + objectName);
-        } catch (Exception e){
-            System.err.println("Error uploading file to bucket: " + e.getMessage());
-            e.printStackTrace();
-        }*/
 }
