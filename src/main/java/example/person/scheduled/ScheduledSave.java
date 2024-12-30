@@ -20,7 +20,7 @@ public class ScheduledSave {
 
         String filePath = csvFileService.createFile();
 
-        String bucketName = "your-bucket-name";
+        String bucketName = "personaddressapi";
         String objectName = getFileName(filePath);
         GoogleBucketUploader.uploadFile(bucketName, filePath, objectName);
 
