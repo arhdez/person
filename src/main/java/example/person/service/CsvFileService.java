@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -55,10 +56,16 @@ public class CsvFileService {
         }
     }
 
-    private static String timeFileName() {
+    /*private static String timeFileName() {
         LocalTime currentTime = LocalTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm-ss");
         return currentTime.format(formatter);
+    }*/
+
+    private static String timeFileName() {
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+        return currentDate.format(formatter);
     }
 
     private void writeCsvFile(String filePath, List<CsvPersonAddressDto> personAddressList) {
