@@ -45,7 +45,10 @@ public class GoogleBucketService {
 
     public byte[] getFile(String objectName) {
         Blob blob = storage.get(BlobId.of(BUCKET_NAME, objectName));
-        return blob.getContent();
+        if (blob == null){
+            return new byte[0];
+        }
+            return blob.getContent();
     }
 
 

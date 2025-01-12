@@ -72,7 +72,9 @@ public class CsvFileService {
     private void writeCsvFile(String filePath, List<CsvPersonAddressDto> personAddressList) {
         try (CSVPrinter csvPrinter = new CSVPrinter(
                 new FileWriter(filePath),
-                CSVFormat.DEFAULT.withHeader("Person ID", "Address ID", "First Name", "Last Name", "Email", "Date of Birth", "Address"))) {
+                CSVFormat.DEFAULT.builder()
+                        .setHeader("Person ID", "Address ID", "First Name", "Last Name", "Email", "Date of Birth", "Address")
+                        .build())) {
 
             // Use stream to simplify iteration
             personAddressList.forEach(dto -> {
