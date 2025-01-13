@@ -7,16 +7,12 @@ import example.person.dto.PersonDto;
 import lombok.AllArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,39 +25,19 @@ public class CsvFileService {
     private final PersonService personService;
     private final AddressService addressService;
 
-    public String createFile(){
+    public File createTempCSVFile() {
         List<PersonAddressDto> personAddresses = personAddressService.findAll();
         List<CsvPersonAddressDto> personAddressList = createCsvPersonAddressDto(personAddresses);
 
-        createdPath();
-        String formattedTime = timeFileName();
-        // Generate CSV file
-        String filePath = "src\\main\\resources\\csv\\person_address"+formattedTime+".csv";
-        writeCsvFile(filePath, personAddressList);
+        File tempFile;
+        File tempDir = new File(System.getProperty("java.io.tmpdir"));
+        String fileName = "person_address_" + timeFileName() + ".csv";
+        tempFile = new File(tempDir, fileName);
 
-        System.out.println("CSV file created at: " + filePath);
-        return filePath;
+        writeCsvFile(tempFile, personAddressList);
+        System.out.println("Temporary CSV file created at: " + tempFile.getAbsolutePath());
+        return tempFile;
     }
-
-    private static void createdPath() {
-        Path directoryPath = Paths.get("src\\main\\resources\\csv");
-        try {
-            // Check if the directory exists
-            if (!Files.exists(directoryPath)) {
-                // Create the directory
-                Files.createDirectories(directoryPath);
-                System.out.println("Directory created successfully: " + directoryPath.toAbsolutePath());
-            }
-        } catch (Exception e) {
-            System.err.println("Error creating directory: " + e.getMessage());
-        }
-    }
-
-    /*private static String timeFileName() {
-        LocalTime currentTime = LocalTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm-ss");
-        return currentTime.format(formatter);
-    }*/
 
     private static String timeFileName() {
         LocalDate currentDate = LocalDate.now();
@@ -69,14 +45,12 @@ public class CsvFileService {
         return currentDate.format(formatter);
     }
 
-    private void writeCsvFile(String filePath, List<CsvPersonAddressDto> personAddressList) {
+    private void writeCsvFile(File file, List<CsvPersonAddressDto> personAddressList) {
         try (CSVPrinter csvPrinter = new CSVPrinter(
-                new FileWriter(filePath),
+                new FileWriter(file),
                 CSVFormat.DEFAULT.builder()
                         .setHeader("Person ID", "Address ID", "First Name", "Last Name", "Email", "Date of Birth", "Address")
                         .build())) {
-
-            // Use stream to simplify iteration
             personAddressList.forEach(dto -> {
                 try {
                     csvPrinter.printRecord(
@@ -85,16 +59,14 @@ public class CsvFileService {
                             dto.getFirstName(),
                             dto.getLastName(),
                             dto.getEmail(),
-                            dto.getDateOfBirth(),
-                            dto.getFullAddress()
+                            dto.getDateOfBirth()
                     );
-                } catch (IOException e) {
+                } catch (IOException e){
                     throw new RuntimeException("Error writing record: " + dto, e);
                 }
             });
-
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing CSV file: " + filePath, e);
+        }catch (IOException e){
+            throw new RuntimeException("Error writing CSV file: " + file.getAbsolutePath(), e);
         }
     }
 
@@ -117,5 +89,4 @@ public class CsvFileService {
             );
         }).collect(Collectors.toList());
     }
-
 }

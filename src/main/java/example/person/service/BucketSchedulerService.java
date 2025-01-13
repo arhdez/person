@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 @Service
@@ -21,31 +19,26 @@ public class BucketSchedulerService {
 
 
     public void schedule() {
-        String filePath = csvFileService.createFile();
+        File tempFile = csvFileService.createTempCSVFile();
 
-        File f = new File(filePath);
-        try (InputStream is = new FileInputStream(f)) {
-            byte[] newCsv = is.readAllBytes();
-            String objectName = getFileName(filePath);
+        try (InputStream inputStream = new FileInputStream(tempFile)) {
+            byte[] newCsvContent = inputStream.readAllBytes();
+            String objectName = tempFile.getName();
 
-            byte[] existentCsv = googleBucketService.getFile(objectName);
+            byte[] existingCsvContent = googleBucketService.getFile(objectName);
 
-            if(!Arrays.equals(newCsv, existentCsv)) {
-                googleBucketService.uploadFile(filePath, objectName);
+            if(!Arrays.equals(newCsvContent, existingCsvContent)) {
+                googleBucketService.uploadFile(tempFile, objectName);
             } else {
                 System.out.println("No change in CSV file. No need to upload.");
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error handling file: " + tempFile.getAbsolutePath(),e);
+        }finally {
+            if(tempFile.exists() && !tempFile.delete()){
+                System.err.println("Failed to delete temporary file: " + tempFile.getAbsolutePath());
+            }
         }
-    }
-
-    private String getFileName(String filePath) {
-        // Convert to Path object
-        Path path = Paths.get(filePath);
-        // Extract the file name (last part of the path)
-        return path.getFileName().toString();
-
     }
 }
