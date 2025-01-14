@@ -25,10 +25,13 @@ public class PersonAddressService {
     private final AddressRepository addressRepository;
     private final PersonAddressRepository personAddressRepository;
     private final PersonAddressMapper personAddressMapper;
+    private final KafkaProducerService kafkaProducerService;
 
     public PersonAddressDto createPersonAddress(PersonAddressDto personAddressDto){
         checkDoublePersonAddress(personAddressDto);
-        return personAddressMapper.personAddressToPersonAddressDto(personAddressRepository.save(personAddressMapper.personAddressDtoToPersonAddress(personAddressDto)));
+        PersonAddressDto createdPersonAddressDto = personAddressMapper.personAddressToPersonAddressDto(personAddressRepository.save(personAddressMapper.personAddressDtoToPersonAddress(personAddressDto)));
+        kafkaProducerService.sendMessage(createdPersonAddressDto);
+        return createdPersonAddressDto;
     }
 
     public List<PersonAddressDto> findAll(Pageable pageable){

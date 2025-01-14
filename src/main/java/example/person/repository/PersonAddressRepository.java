@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface PersonAddressRepository extends CrudRepository<PersonAddress, PersonAddressId>, PagingAndSortingRepository<PersonAddress, PersonAddressId> {
-    List<PersonAddress> findByIdAddressId(UUID uuid);
+    List<PersonAddress> findByIdPersonId(UUID uuid);
+    //List<PersonAddress> findByIdAddressId(UUID uuid);
     boolean existsByIdPersonIdAndIdAddressId(UUID personId, UUID addressId);
 }

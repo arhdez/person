@@ -2,14 +2,16 @@ package example.person.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 import java.util.UUID;
 
 @Data
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PersonaAddressKafkaDto {
+public class PersonAddressKafkaDto {
 
     @JsonProperty("person_id")
     private UUID personId;
