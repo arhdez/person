@@ -20,6 +20,6 @@ public class KafkaConsumerService {
     public void consumerAddressDto(AddressKafkaDto addressKafkaDto) {
         addressService.processAddress(addressKafkaDto);
         LOGGER.info("Received payload {}", addressKafkaDto.toString());
-        addressService.processAddress(addressKafkaDto);
+        //addressService.processAddress(addressKafkaDto);
     }
 }
